@@ -1,0 +1,44 @@
+const { codes } = require("../utils");
+
+module.exports = {
+  create: async (req, res) => {
+    try {
+    } catch (error) {
+      return res
+        .status(codes.INTERNAL_SERVER_ERROR)
+        .json({ sucess: false, error: error.message });
+    }
+  },
+  update: async (req, res) => {
+    try {
+    } catch (error) {
+      return res
+        .status(codes.INTERNAL_SERVER_ERROR)
+        .json({ sucess: false, error: error.message });
+    }
+  },
+  findOne: async (req, res) => {
+    try {
+    } catch (error) {
+      return res
+        .status(codes.INTERNAL_SERVER_ERROR)
+        .json({ sucess: false, error: error.message });
+    }
+  },
+  index: async (req, res) => {
+    try {
+    } catch (error) {
+      return res
+        .status(codes.INTERNAL_SERVER_ERROR)
+        .json({ sucess: false, error: error.message });
+    }
+  },
+  delete: async (req, res) => {
+    try {
+    } catch (error) {
+      return res
+        .status(codes.INTERNAL_SERVER_ERROR)
+        .json({ sucess: false, error: error.message });
+    }
+  },
+};
