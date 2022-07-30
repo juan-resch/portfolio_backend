@@ -12,7 +12,7 @@ module.exports = {
       if (oldUser) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ sucess: false, error: "User already exists" });
+          .json({ success: false, error: "User already exists" });
       }
 
       const user = await prisma.user.create({
@@ -26,12 +26,12 @@ module.exports = {
         },
       });
 
-      return res.status(codes.CREATED).json({ sucess: true, data: user });
+      return res.status(codes.CREATED).json({ success: true, data: user });
     } catch (error) {
       console.log(error);
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
-        .json({ sucess: false, error: error.message });
+        .json({ success: false, error: error.message });
     }
   },
   update: async (req, res) => {
@@ -44,7 +44,7 @@ module.exports = {
       if (!oldUser) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ sucess: false, error: "User not found" });
+          .json({ success: false, error: "User not found" });
       }
 
       const user = await prisma.user.update({
@@ -60,12 +60,12 @@ module.exports = {
         },
       });
 
-      return res.status(codes.OK).json({ sucess: true, data: user });
+      return res.status(codes.OK).json({ success: true, data: user });
     } catch (error) {
       console.log(error);
       res
         .status(codes.INTERNAL_SERVER_ERROR)
-        .json({ sucess: false, error: error.message });
+        .json({ success: false, error: error.message });
     }
   },
   findOne: async (req, res) => {
@@ -79,15 +79,15 @@ module.exports = {
       if (!user) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ sucess: false, error: "User not found" });
+          .json({ success: false, error: "User not found" });
       }
 
-      return res.status(codes.OK).json({ sucess: true, data: user });
+      return res.status(codes.OK).json({ success: true, data: user });
     } catch (error) {
       console.log(error);
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
-        .json({ sucess: false, error: error.message });
+        .json({ success: false, error: error.message });
     }
   },
   delete: async (req, res) => {
@@ -99,30 +99,30 @@ module.exports = {
       if (!user) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ sucess: false, error: "User not found" });
+          .json({ success: false, error: "User not found" });
       }
 
       user.password = undefined;
       user.lastName = undefined;
 
-      return res.status(codes.OK).json({ sucess: true, data: user });
+      return res.status(codes.OK).json({ success: true, data: user });
     } catch (error) {
       console.log(error);
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
-        .json({ sucess: false, error: error.message });
+        .json({ success: false, error: error.message });
     }
   },
   index: async (req, res) => {
     try {
       const users = await prisma.user.findMany();
 
-      return res.status(codes.OK).json({ sucess: true, data: users });
+      return res.status(codes.OK).json({ success: true, data: users });
     } catch (error) {
       console.log(error);
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
-        .json({ sucess: false, error: error.message });
+        .json({ success: false, error: error.message });
     }
   },
 };

@@ -4,18 +4,22 @@ const prisma = require("../../prisma");
 module.exports = {
   create: async (req, res) => {
     try {
-      const { title, description, text, userId } = req.body;
+      const { path, postId } = req.body;
 
-      const post = await prisma.post.create({
+      const media = await prisma.postMedia.create({
         data: {
-          description,
-          text,
-          title,
-          userId,
+          path,
+          postId,
         },
       });
 
-      return res.status(codes.CREATED).json({ success: true, data: post });
+      if (!media) {
+        return res
+          .status(codes.BAD_REQUEST)
+          .json({ success: false, error: "Media not found" });
+      }
+
+      return res.status(codes.CREATED).json({ success: true, data: media });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -24,34 +28,31 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      const { id, title, description, text, userId } = req.body;
+      const { path, postId, id } = req.body;
 
-      const oldPost = await prisma.post.findFirst({
+      const old_media = await prisma.postMedia.findFirst({
         where: {
           id,
         },
       });
 
-      if (!oldPost) {
+      if (!old_media) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Media not found" });
       }
 
-      const post = await prisma.post.update({
+      const media = await prisma.postMedia.update({
         data: {
-          description,
-          text,
-          title,
-          userId,
-          updatedAt: new Date(),
+          path,
+          postId,
         },
         where: {
           id,
         },
       });
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: media });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -62,15 +63,19 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const post = await prisma.post.findFirst({ where: { id } });
+      const media = await prisma.postMedia.findFirst({
+        where: {
+          id,
+        },
+      });
 
-      if (!post) {
+      if (!media) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Media not found" });
       }
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: media });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -79,9 +84,9 @@ module.exports = {
   },
   index: async (req, res) => {
     try {
-      const posts = await prisma.post.findMany();
+      const medias = await prisma.postMedia.findMany();
 
-      return res.status(codes.OK).json({ success: true, data: posts });
+      return res.status(codes.OK).json({ success: true, data: medias });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -92,17 +97,17 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const oldPost = await prisma.post.findFirst({ where: { id } });
+      const old_media = await prisma.postMedia.findFirst({ where: { id } });
 
-      if (!oldPost) {
+      if (!old_media) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Media not found" });
       }
 
-      const deletedPost = await prisma.post.delete({ where: { id } });
+      const deleted_media = await prisma.postMedia.delete({ where: { id } });
 
-      return res.status(codes.OK).json({ success: true, data: deletedPost });
+      return res.status(codes.OK).json({ success: true, data: deleted_media });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)

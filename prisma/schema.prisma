@@ -11,30 +11,31 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(cuid())
-  firstName    String
-  lastName     String
-  birtyday     String
-  photo        String?
-  email        String         @unique
-  password     String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime?      @default(now())
-  posts        Post[]
-  PostReaction PostReaction[]
+  id            String         @id @default(uuid())
+  firstName     String
+  lastName      String
+  birtyday      String
+  photo         String?
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @default(now())
+  posts         Post[]
+  postReactions PostReaction[]
+  works         Work[]
 }
 
 model Post {
-  id          String         @id @default(cuid())
+  id          String         @id @default(uuid())
   title       String
   description String
   text        String
   createdAt   DateTime       @default(now())
   updatedAt   DateTime?      @default(now())
   reactions   PostReaction[]
-  User        User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postMedias  PostMedia[]
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String
-  PostMedia   PostMedia[]
 }
 
 model PostReaction {
@@ -49,7 +50,7 @@ model PostReaction {
 }
 
 model PostMedia {
-  id        String    @id @default(cuid())
+  id        String    @id @default(uuid())
   path      String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @default(now())
@@ -58,20 +59,33 @@ model PostMedia {
 }
 
 model Work {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   name        String
   description String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @default(now())
-  skills      Skill[]
+  techs       Tech[]
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model Tech {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now())
+  skill     Skill     @relation(fields: [skillId], references: [id])
+  skillId   String
+  work      Work      @relation(fields: [workId], references: [id])
+  workId    String
 }
 
 model Skill {
-  id        String    @id @default(cuid())
+  id        String    @id @default(uuid())
   name      String
   icon      String
+  color     String
+  role      String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @default(now())
-  Work      Work      @relation(fields: [workId], references: [id])
-  workId    String
+  Tech      Tech[]
 }

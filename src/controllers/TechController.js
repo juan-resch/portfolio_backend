@@ -4,18 +4,17 @@ const prisma = require("../../prisma");
 module.exports = {
   create: async (req, res) => {
     try {
-      const { title, description, text, userId } = req.body;
+      const { skillId, workId } = req.body;
 
-      const post = await prisma.post.create({
-        data: {
-          description,
-          text,
-          title,
-          userId,
-        },
-      });
+      const tech = await prisma.tech.create({ data: { workId, skillId } });
 
-      return res.status(codes.CREATED).json({ success: true, data: post });
+      if (!tech) {
+        return res
+          .status(codes.BAD_REQUEST)
+          .json({ success: false, error: "Could not create tech" });
+      }
+
+      return res.status(codes.CREATED).json({ success: true, data: tech });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -24,34 +23,28 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      const { id, title, description, text, userId } = req.body;
+      const { skillId, workId, id } = req.body;
 
-      const oldPost = await prisma.post.findFirst({
+      const oldTech = await prisma.tech.findFirst({
         where: {
           id,
         },
       });
 
-      if (!oldPost) {
+      if (!oldTech) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Tech not found" });
       }
 
-      const post = await prisma.post.update({
-        data: {
-          description,
-          text,
-          title,
-          userId,
-          updatedAt: new Date(),
-        },
+      const tech = await prisma.tech.update({
+        data: { workId, skillId },
         where: {
           id,
         },
       });
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: tech });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -62,15 +55,15 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const post = await prisma.post.findFirst({ where: { id } });
+      const tech = await prisma.tech.findFirst({ where: { id } });
 
-      if (!post) {
+      if (!tech) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Tech not found" });
       }
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: tech });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -79,9 +72,9 @@ module.exports = {
   },
   index: async (req, res) => {
     try {
-      const posts = await prisma.post.findMany();
+      const techs = await prisma.tech.findMany();
 
-      return res.status(codes.OK).json({ success: true, data: posts });
+      return res.status(codes.OK).json({ success: true, data: techs });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -92,17 +85,21 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const oldPost = await prisma.post.findFirst({ where: { id } });
+      const oldTech = await prisma.tech.findFirst({
+        where: {
+          id,
+        },
+      });
 
-      if (!oldPost) {
+      if (!oldTech) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Tech not found" });
       }
 
-      const deletedPost = await prisma.post.delete({ where: { id } });
+      const deleted_tech = await prisma.tech.delete({ where: { id } });
 
-      return res.status(codes.OK).json({ success: true, data: deletedPost });
+      return res.status(codes.OK).json({ success: true, data: deleted_tech });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)

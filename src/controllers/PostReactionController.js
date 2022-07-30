@@ -4,18 +4,23 @@ const prisma = require("../../prisma");
 module.exports = {
   create: async (req, res) => {
     try {
-      const { title, description, text, userId } = req.body;
+      const { type, postId, userId } = req.body;
 
-      const post = await prisma.post.create({
+      const reaction = await prisma.postReaction.create({
         data: {
-          description,
-          text,
-          title,
+          type,
+          postId,
           userId,
         },
       });
 
-      return res.status(codes.CREATED).json({ success: true, data: post });
+      if (!reaction) {
+        return res
+          .status(codes.BAD_REQUEST)
+          .json({ success: false, error: "Error creating reaction" });
+      }
+
+      return res.status(codes.CREATED).json({ success: true, data: reaction });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -24,25 +29,24 @@ module.exports = {
   },
   update: async (req, res) => {
     try {
-      const { id, title, description, text, userId } = req.body;
+      const { type, postId, userId, id } = req.body;
 
-      const oldPost = await prisma.post.findFirst({
+      const old_reaction = await prisma.postReaction.findFirst({
         where: {
           id,
         },
       });
 
-      if (!oldPost) {
+      if (!old_reaction) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Reaction not found" });
       }
 
-      const post = await prisma.post.update({
+      const reaction = await prisma.postReaction.update({
         data: {
-          description,
-          text,
-          title,
+          type,
+          postId,
           userId,
           updatedAt: new Date(),
         },
@@ -51,7 +55,7 @@ module.exports = {
         },
       });
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: reaction });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -62,15 +66,15 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const post = await prisma.post.findFirst({ where: { id } });
+      const reaction = await prisma.postReaction.findFirst({ where: { id } });
 
-      if (!post) {
+      if (!reaction) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Reaction not found" });
       }
 
-      return res.status(codes.OK).json({ success: true, data: post });
+      return res.status(codes.OK).json({ success: true, data: reaction });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -79,9 +83,9 @@ module.exports = {
   },
   index: async (req, res) => {
     try {
-      const posts = await prisma.post.findMany();
+      const reactions = await prisma.postReaction.findMany();
 
-      return res.status(codes.OK).json({ success: true, data: posts });
+      return res.status(codes.OK).json({ success: true, data: reactions });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)
@@ -92,17 +96,19 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const oldPost = await prisma.post.findFirst({ where: { id } });
+      const deleted_reaction = await prisma.postReaction.delete({
+        where: { id },
+      });
 
-      if (!oldPost) {
+      if (!deleted_reaction) {
         return res
           .status(codes.BAD_REQUEST)
-          .json({ success: false, error: "Post not found" });
+          .json({ success: false, error: "Could not delete reaction" });
       }
 
-      const deletedPost = await prisma.post.delete({ where: { id } });
-
-      return res.status(codes.OK).json({ success: true, data: deletedPost });
+      return res
+        .status(codes.OK)
+        .json({ success: true, data: deleted_reaction });
     } catch (error) {
       return res
         .status(codes.INTERNAL_SERVER_ERROR)

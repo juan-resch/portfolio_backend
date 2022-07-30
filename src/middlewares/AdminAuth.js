@@ -7,13 +7,13 @@ module.exports = {
     if (!authorization) {
       return res
         .status(codes.UNAUTHORIZED)
-        .json({ sucess: false, error: "Token not provided" });
+        .json({ success: false, error: "Token not provided" });
     }
 
     if (authorization !== "juanreschsecret") {
       return res
         .status(codes.UNAUTHORIZED)
-        .json({ sucess: false, error: "Unauthorized" });
+        .json({ success: false, error: "Unauthorized" });
     }
 
     return next();
